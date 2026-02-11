@@ -3,185 +3,190 @@
 #include <time.h>
 #include <string>
 #include <random>
+#include <iomanip>
+#include <cstdlib>
 
 using namespace std;
-static int wrongAns = 0, correctAns = 0;
-double answer, marks;
-int numberOfQuestions, choice, schoice, set_choice, logo, theme;
-bool mixed = false;
 
+int numberOfQuestion,correct_count = 0, wrong_count = 0;
+float marks;
+char operators[] = {'+','-','*','/'};
 string name;
+
+float divisionAns(int,int);
+void startGame();
+void loading();
+void questionsGenerator(int);
+void answerChecker(int,char,int,float);
+void Correct();
+void Wrong();
+
+
+int main(){
+	startGame();
+	return 0;
+}
+
+void answerChecker(int a,char b,int c,float d){
+	switch(b){
+		case '+':{
+			if(d == (a + c)){
+				Correct();
+			}
+			else{
+				Wrong();
+			}
+			break;
+		}
+		case '-':{
+			if(d == (a - c)){
+				Correct();
+			}
+			else{
+				Wrong();
+			}
+			break;
+		}
+		case '*':{
+			if(d == (a * c)){
+				Correct();
+			}
+			else{
+				Wrong();
+			}
+			break;
+		}
+		case '/':{
+			if(d == divisionAns(a , c)){
+				Correct();
+			}
+			else{
+				Wrong();
+			}
+			break;
+		}
+	}
+	
+}
 
 //displays when answer is wrong
 void Wrong() {
-
 	cout <<" WRONG" << endl;
-
-	wrongAns++;
-
+	wrong_count++;
 }
 
 //displays when answer is correct
 void Correct() {
-
 	cout <<" CORRECT" << endl;
-
-	correctAns++;
+	correct_count++;
 }
 
 //sets the quotient into having two decimal places
-float round(float var ){
-    
-    float value = (int)(var * 100 + .5);
-    
-    return (float)value / 100;
+float divisionAns(int dividend,int divider){
+    return static_cast<float>(dividend) / divider;
 }
+
 
 //the loading screen
 void loading() {
-
 	cout<<endl;
-
 	cout << "Generating questions";
 	for (int i = 1; sleep(1)||i <= 3; i++) {
 		cout << ".";
 	}
 	system("cls");
-
 	cout << endl;
-
 	cout << "Get ready...";
 	for (int j = 3; sleep(1) || j >= 1; j--) {
 		cout <<j<<" ";
-
 	}
-
-
 	cout << "GO...." << endl;
-
 	system("cls");
 }
 
 //generates questions based on operation chosen
-void questions(char oper) {
-
-	for (int k = 1; k <= numberOfQuestions; k++) {
-
-		if(mixed == true){
-			char mixed_sign[] = {'+','-','/','*'};
-
-			int operatorIndex;
-
-			operatorIndex = 0 + rand() % 4;
-
-			oper = mixed_sign[operatorIndex];
+void questionsGenerator(int operation) {
+	char sign,play_again;
+	int first_value,second_value,answer;
+	switch(operation){
+		case 1:{
+			sign = '+';
+			break;
 		}
-
-
-		int firstValue = 51 + rand() % 50;
-		int secondValue = 1 + rand() % 50;
-		cout << endl;
-		cout << "QN" << ":" << firstValue<<" "<< oper<<" "<<secondValue<<" =";
-
-		cin >> answer;
-
-		switch (oper) {
-
-			case '+': {
-				if (answer == (firstValue + secondValue)) {
-					Correct();
-
-				} else {
-
-					Wrong();
-				}
-				break;
-			}
-			case '-': {
-
-				if (answer == (firstValue-secondValue)) {
-
-					Correct();
-
-				} else {
-
-					Wrong();
-
-				}
-
-				break;
-			}
-			case '*': {
-
-				if (answer == (firstValue*secondValue)) {
-
-					Correct();
-
-				} else {
-
-					Wrong();
-
-				}
-				break;
-			}
-			case '/': {
-
-				if (answer == (round(firstValue / secondValue))) {
-
-					Correct();
-
-				} else {
-
-					Wrong();
-
-				}
-
-				break;
-			}
-			default: {
-
-
-
-
-
-				cout << "invalid option" << endl;
-
-				break;
-			}
+		
+		case 2:{
+			sign = '-';
+			break;
+		}
+		
+		case 3:{
+			sign = '*';
+			break;
+		}
+		
+		case 4:{
+			sign = '/';
+			break;
+		}
+		
+		case 5:{
+			operation = 5;
+			break;
+		}
+		
+		default:{
+			cout << "invalid option";
+			break;
 		}
 	}
-	cout << endl;
+
+	for (int k = 1; k <= numberOfQuestion; k++) {
+		first_value = 50 + rand() % 100;
+		second_value = 1 + rand() % 100;
+		cout << endl;
+		
+		if(operation == 5){
+			sign = operators[0 + rand() % 4];
+		}
+		
+		cout << "QN" << ":" << first_value <<" "<< sign <<" "<< second_value <<" =";
+		cin >> answer;
+		cout << endl;
+		answerChecker(first_value,sign,second_value,answer);
+	    cout << endl;
 	
-	cout<<"---------------RESULTS-----------------"<<endl;
-
-	cout << "You got " << correctAns << " correct" << endl;
-
-	cout << endl;
-
-	cout<<"You got " << wrongAns <<" wrong" << endl;
-
-	cout << endl;
-
-	marks = correctAns/numberOfQuestions;
-
-	cout << "Marks are: " << marks << "%" << endl;
+	    cout<<"---------------RESULTS-----------------"<<endl;
+	    cout << "You got " << correct_count << " correct" << endl;
+	    cout << endl;
+	    cout<<"You got " << wrong_count <<" wrong" << endl;
+	    cout << endl;
+	    marks = (static_cast<float>(correct_count) / numberOfQuestion) * 100;
+	    cout << "Marks are: " << marks << "%" << endl;
+	    cout<<"---------------------------------------"<<endl;
+	    cout << endl;
+	    cout << "Do you want to play again?(y/n):";
+	    cin >> play_again;
 	
-	cout<<"---------------------------------------"<<endl;
+	    if( play_again == 'y' || play_again == 'Y'){
+		    system("cls);
+		    startGame();
+	    }
+	    else{
+		    exit(0);
+	    }
 
+    }
 }
 
 //game starts here
-void startGame() {
-
-	mixed = false;
-
+void startGame(){
+	int menu_choice,operation_choice,settings_choice,theme,logo;
 	srand(time(0));
-
 	cout << endl;
-
 	logo=1+rand()%3;
 
 	if(logo==1) {
+		
 		cout << "aaaaaaaaaaaaaaa aaaaaaaaaaaaaaa " << endl;
 		cout << "aaaaaaaaaaaaaaa aaaaaaaaaaaaaaa " << endl;
 		cout << "aaaaa     aaaaa      aaaaa      " << endl;
@@ -191,7 +196,11 @@ void startGame() {
 		cout << "aaaaa     aaaaa      aaaaa      " << endl;
 		cout << "aaaaa     aaaaa aaaaaaaaaaaaaaa " << endl;
 		cout << "aaaaa     aaaaa aaaaaaaaaaaaaaa " << endl;
-	} else if(logo==2) {
+		
+	} 
+	
+	else if(logo==2) {
+		
 		cout<<"############### #####     ##### ############### "<<endl;
 		cout<<"############### ######   ###### ############### "<<endl;
 		cout<<"#####     ##### ####### ####### #####           "<<endl;
@@ -200,7 +209,10 @@ void startGame() {
 		cout<<"#####           #####  #  ##### #####           "<<endl;
 		cout<<"#####           #####     ##### ############### "<<endl;
 		cout<<"#####           #####     ##### ############### "<<endl;
-	} else {
+	} 
+	
+	else {
+		
 		cout<<"#####     ##### ############### #####           #####           ############### "<<endl;
 		cout<<"#####     ##### ############### #####           #####           ############### "<<endl;
 		cout<<"#####     ##### #####           #####           #####           #####     ##### "<<endl;
@@ -209,232 +221,109 @@ void startGame() {
 		cout<<"#####     ##### #####           #####           #####           #####     ##### "<<endl;
 		cout<<"#####     ##### ############### ############### ############### ###############"<<endl;
 		cout<<"#####     ##### ############### ############### ############### ###############"<<endl;
+		
 	}
+	
 	cout<<"________________________"<<endl;
 	cout<<"*****MATH QUIZ GAME*****"<< endl;
 	cout<<"________________________"<<endl;
-
 	cout << "made by: Adon" << endl;
-
 	cout << endl;
-
-	cout << "1.start "<<endl;
-
-	cout << "2.settings "<<endl;
-
-	cout<<endl;
-
-	cout<<"CHOICE: ";
-
-	cin>>schoice;
-
-	switch(schoice) {
-
+	cout << "1.start\n";
+	cout << "2.settings\n";
+	cout << "3.Exit\n";
+	cout << endl;
+	cout << "CHOICE: ";
+	cin >> menu_choice;
+	switch(menu_choice) {
 		case 1: {
-
 			cout << "Enter your name: ";
-
 			cin >> name;
-
 			cout << endl;
-
 			cout << "Enter the number of questions: ";
-
-			cin >> numberOfQuestions;
-
+			cin >> numberOfQuestion;
 			cout << endl;
-
 			cout << "CHOOSE THE TYPE OF QUESTION:" << endl;
-
 			cout << endl;
-
-			cout << "1.Addition" << endl;
-
-			cout << "2.Subtraction" << endl;
-
-			cout << "3.Multiplication" << endl;
-
-			cout << "4.Division" << endl;
-
-			cout << "5.Mixed" << endl;
-
+			cout << "1.Addition\n";
+			cout << "2.Subtraction\n";
+			cout << "3.Multiplication\n";
+			cout << "4.Division\n";
+			cout << "5.Mixed\n";
 			cout << endl;
-
 			cout << "CHOICE: ";
-
-			cin >> choice;
-
-			switch (choice) {
-
-				case 1: {
-
-					loading();
-
-					char sign = '+';
-
-					questions(sign);
-
-					break;
-				}
-				case 2: {
-
-					loading();
-
-					char sign = '-';
-
-					questions(sign);
-
-					break;
-
-				}
-
-				case 3: {
-
-					loading();
-
-					char sign = '*';
-
-					questions(sign);
-
-					break;
-				}
-				case 4: {
-
-
-
-					loading();
-
-					char sign = '/';
-
-					questions(sign);
-
-					break;
-				}
-				case 5: {
-
-					loading();
-
-					mixed = true;
-
-					char sign = 'm';
-
-					questions(sign);
-					
-					break;
-
-				}
-				default: {
-
-					cout << "invalid option" << endl;
-
-				}
-			}
-
-			char playAgain;
-
-			cout << "Do you want to play again? (y/n): ";
-
-			cin >> playAgain;
-
-			if (playAgain == 'y' || playAgain == 'Y') {
-
-				wrongAns = 0;
-
-				correctAns = 0;
-				
-				system("cls");
-
-				startGame();
-
-			} else {
-
-
-
-				cout << "Thanks for playing!" << endl;
-			}
+			cin >> operation_choice;
+			loading();
+			questionsGenerator(operation_choice);
 			break;
 		}
-		case 2: {
-
+		
+		case 2:{
+			back_settings:
 			system("cls");
-
-			cout<<"settings"<<endl;
-
-
-			cout<<"1. Theme"<<endl;
-
-			cout<<"2.Credits"<<endl;
-
-			cout<<endl;
-
-			cout<<"CHOICE: "<<endl;
-
-			cin>>set_choice;
-
-			switch(set_choice) {
-
+			cout << "settings\n";
+			cout << "--------\n";
+			cout << "1.Theme\n";
+			cout << "2.Credits\n";
+			cout << "CHOICE: ";
+			cin >> settings_choice;
+			switch(settings_choice) {
 				case 1: {
-
-
 					system("cls");
-
-					cout<<"choose theme:\n";
-					cout<<"1.Dark theme:\n";
-
-					cout<<"2.Light theme:\n";
-
-					cout<<endl;
-
-					cout<<"CHOICE: ";
-
-					cin>>theme;
-
-
-
+					cout << "choose theme:\n";
+					cout << "1.Dark theme:\n";
+					cout << "2.Light theme:\n";
+					cout << endl;
+					cout << "CHOICE: ";
+					cin >> theme;
 					switch(theme) {
-
 						case 1: {
-
 							system("color 0F");
-
 							system("cls");
-
 							startGame();
-
 							break;
 						}
+						
 						case 2: {
-
 							system("color F0");
-
 							system("cls");
-
 							startGame();
-
 							break;
 						}
 					}
 					break;
 				}
+				
 				case 2:{
-					
-					cout<<"HELLO WORLD!";
+					system("cls");
+					cout << "MADE BY ADON TUMAINI\n";
+					cout << "hope you enjoy it :)";
+					system("pause");
+					startGame();
 					break;
 				}
-
+				
+				default:{
+					cout << "invalid choice\n";
+					system("pause");
+					goto back_settings;
+					break;
+				}
 				break;
-
 			}
-
+			break;
 		}
-
+		case 3:{	
+			exit(0);
+			break;
+		}
+		
+		default:{
+			cout << "invalid choice\n";
+			system("pause");
+			system("cls");
+			startGame();
+			break;
+		}
 	}
-}
-
-
-int main() {
-
-	startGame();
-
-	return 0;
 }
